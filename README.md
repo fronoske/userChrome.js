@@ -4,11 +4,11 @@
 Firefox 68.0.2 で動作確認済み。69以降では動かないかも。
 
 ### スクリプト一覧
-#### CopyTabURL.uc.js
+##### CopyTabURL.uc.js
 ページ右クリックでタイトルとURLをコピーする。文字列の書式を選べる。ユーザー自身でのカスタマイズも簡単なはず。
-#### HistorySidebarOpenInTab.uc.js
+##### HistorySidebarOpenInTab.uc.js
 履歴サイドバーから新規タブで開く。ブックマークはabout:configで設定できるのに履歴はないのはなぜ。
-#### closeAllTabsLeft.uc.js
+##### closeAllTabsLeft.uc.js
 アクティブタブの左のタブをすべて閉じる。「右をすべて閉じる」はあるのに左がない。拡張機能があったけど日本語対応してないので自作。
 
 

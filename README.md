@@ -10,7 +10,8 @@ Firefox 68.0.2 で動作確認済み。69以降では動かないかも。
 履歴サイドバーから新規タブで開く。ブックマークはabout:configで設定できるのに履歴はないのはなぜ。
 ##### closeAllTabsLeft.uc.js
 アクティブタブの左のタブをすべて閉じる。「右をすべて閉じる」はあるのに左がない。拡張機能があったけど日本語対応してないので自作。
-
+#### upperURI.uc.jp
+ロケーションバー右クリックで現在のURIの上の階層に移動する
 
 ### 超重要サイト
 ##### [userChrome.js用スクリプト - wiki@nothing](http://wiki.nothing.sh/page/userChrome.js%CD%D1%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8)

@@ -1,7 +1,7 @@
 # userChrome.js
 
 自作のUserChrome.js用スクリプトを置いています。
-Firefox 68.0.2 で動作確認済み。69以降では動かないかも。
+Firefox 77.0.1 で動作確認済み。
 
 ### スクリプト一覧
 ##### CopyTabURL.uc.js

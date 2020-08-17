@@ -16,6 +16,7 @@
   const urlBarId = "urlbar-container"
   
   // ポップアップ消去時に URIs とセパレータを削除
+  console.log(document.getElementById(urlBarId));
   document.getElementById(urlBarId).addEventListener("popuphidden", function(event)
   {
     const menupopup = event.originalTarget;
@@ -40,12 +41,12 @@
         menupopup.hidePopup();
       };
       // セパレータ
-      const sep = document.createElement("menuseparator");
+      const sep = document.createXULElement("menuseparator");
       sep.setAttribute(attrName, attrValue);
       menupopup.insertBefore(sep, menupopup.firstChild);
       // URIs
       for(let i=0; i < uriArray.length; i++){
-        const menuitem = document.createElement("menuitem");
+        const menuitem = document.createXULElement("menuitem");
         menuitem.id = attrValue + i;
         menuitem.setAttribute("label", uriArray[i]);
         menuitem.setAttribute(attrName, attrValue);

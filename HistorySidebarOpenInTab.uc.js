@@ -3,12 +3,15 @@
 // @namespace      http://fronoske.net/
 // @description    Open new Tab from History Sidebar
 // @include        main
+// @include        chrome://browser/content/history/history-panel.xhtml
 // @include        chrome://browser/content/history/history-panel.xul
+// @include        chrome://browser/content/places/historySidebar.xhtml
 // @include        chrome://browser/content/places/historySidebar.xul
-// @compatibility  Firefox 66+
+// @compatibility  Firefox 73+
 // @author         fronoske
 // @note           履歴サイドバーから新しいタブで開く
 // @version        2019/05/29 initial release
+// @version        2020/06/16 73+
 // ==/UserScript==
 
 

@@ -3,10 +3,11 @@
 // @namespace      http://fronoske.net/
 // @description    Add menu item for "Close All Tabs left" into tab context menu
 // @include        main
-// @compatibility  Firefox 66+
+// @compatibility  Firefox 71+
 // @author         fronoske
-// @note           ロケーションバーを右クリックでURLの階層を上がる
+// @note           左側のタブをすべて閉じる
 // @version        2019/05/08 initial release
+// @version        2020/06/16 71+
 
 (function()
 {
@@ -14,12 +15,12 @@
   const MENU_ITEM_LABEL = "左側のタブをすべて閉じる";
   const MENU_ITEM_ACCESSKEY = "L";
   
-  const item = document.createElement("menuitem");
+  const item = document.createXULElement("menuitem");
   item.setAttribute("id", MENU_ITEM_ID);
   item.setAttribute("label", MENU_ITEM_LABEL);
   item.setAttribute("accesskey", MENU_ITEM_ACCESSKEY);
 
-  const tabContext = gBrowser.tabContainer.contextMenu;
+  const tabContext = document.getElementById("tabContextMenu");
   const $closeAllTabsRight = document.getElementById("context_closeTabsToTheEnd");
   tabContext.insertBefore(item, $closeAllTabsRight);
 

@@ -36,3 +36,9 @@ alice0775 さんのリポジトリにも採用されているが、そちらは�
 
 #### [alice0775/userChrome.js](https://github.com/alice0775/userChrome.js)
 ご存じalice0775さんのリポジトリ。本当にお世話になってます。
+
+#### Firefox ソースリポジトリ
+
+https://hg.mozilla.org/releases/comm-release/file
+
+OpenLinkIn() などの関数の仕様を調べたりする。ちなみに OpenLinkIn() は /suite/base/content/utilityOverlay.js にある。

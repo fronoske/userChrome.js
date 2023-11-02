@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name           upperURI.uc.js
-// @namespace      http://fronoske.net/
+// @namespace      http://github.com/fronoske/
 // @description    Add upper URIs to the context menu in Location bar.
 // @include        main
-// @compatibility  Firefox 66+
+// @compatibility  Firefox 111+
 // @author         fronoske
 // @note           ロケーションバーを右クリックでURLの階層を上がる
+// @version        2023/11/02 111+
 // @version        2019/05/08 57+
 // @version        2007/08/05 initial release
 
@@ -37,7 +38,12 @@
       {
         if (event.type == "click" && event.button != 1) return;
         const targetURI = event.originalTarget.getAttribute("label");
-        gBrowser.loadURI(targetURI, {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()});
+        // gBrowser.loadURI(targetURI, {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()});
+        openLinkIn(targetURI, "current", {allowThirdPartyFixup:false,
+         postData:null,
+         referrerInfo: null,
+         triggeringPrincipal:Services.scriptSecurityManager.createNullPrincipal({})
+        });
         menupopup.hidePopup();
       };
       // セパレータ

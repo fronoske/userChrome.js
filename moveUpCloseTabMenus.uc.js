@@ -18,4 +18,5 @@
     $menuPopup_tabContextMenu.insertBefore($childNodes[0], null);
   };
   $menuPopup_closeTabOptions.remove();
+  $menuItem_closeTabOptions.remove();
 })();

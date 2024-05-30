@@ -8,9 +8,28 @@
 // @note           コンテキストメニューでタブのタイトルやURLをコピーする
 // @version        2019/07/10 initial release
 // @version        2020/06/16 71+
+// @version        2024/05/30 Support copy link as rich text
 // ==/UserScript==
 
 (function () {
+
+  const copyRichText = function(text, url){
+
+    if ( typeof window.ClipboardItem === 'undefined' ){
+      alert("リッチテキスト形式のコピーを行うには、ブラウザが ClipboardItem をサポートしている必要があります。\nFirefox の場合は dom.events.asyncClipboard.clipboardItem を有効にしてください（自己責任で）");
+      return;
+    }
+    const htmlContent = `<a href="${url}">${text}</a>`;
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const blobPlain = new Blob([htmlContent], { type: 'text/plain' });
+    const item = [new window.ClipboardItem({ 'text/html': blob, 'text/plain': blobPlain })];
+    navigator.clipboard.write(item).then( () => {
+      // console.log(item);
+      console.log("Copied link as rich text!");
+    });
+    return;
+  };
+
   
   const clipboard = Cc['@mozilla.org/widget/clipboardhelper;1'].getService(Ci.nsIClipboardHelper);
 
@@ -42,13 +61,20 @@
       const url = tab.linkedBrowser.currentURI.spec;
       const title = tab.getAttribute("label");
       const strFormat = {
+        'T': title,
+        'U': url,
         'P': `${title} - ${url}`,
         'N': `${title}\n${url}`,
         'M': `[${title.replace("\\[","\\[").replace("\\]","\\]")}](${url.replace("\\)","%29")})`,
         'J': `[${title}|${url}]`,
+        'R': ``,
       };
       const key = $item.getAttribute("accesskey");
-      clipboard.copyString( strFormat[key] || strFormat['P'] ); // もしアクセスキーが想定外なら Plain
+      if ( key == 'R') {
+        copyRichText(title, url);
+      } else {
+        clipboard.copyString( strFormat[key] || strFormat['P'] ); // もしアクセスキーが想定外なら Plain
+      }
 
       //選択文字列を得る
       /* console.dir(content);
@@ -64,7 +90,8 @@
     { id: "fronoske_copyTitleURL_plain",    key: "P", label: "タイトル - URL" },
     { id: "fronoske_copyTitleURL_newline",  key: "N", label: "タイトル(改行)URL" },
     { id: "fronoske_copyTitleURL_markdown", key: "M", label: "[タイトル](URL) markdown形式" },
-    { id: "fronoske_copyTitleURL_jira",     key: "J", label: "[タイトル|URL] JIRA形式"  },
+    { id: "fronoske_copyTitleURL_jira",     key: "J", label: "[タイトル|URL] JIRA形式" },
+    { id: "fronoske_copyTitleURL_richText", key: "R", label: "リッチテキスト形式" },
     ];
   menuItems.forEach( (item) => {
     const $item = document.createXULElement("menuitem");

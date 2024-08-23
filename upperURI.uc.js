@@ -6,6 +6,7 @@
 // @compatibility  Firefox 111+
 // @author         fronoske
 // @note           ロケーションバーを右クリックでURLの階層を上がる
+// @version        2024/08/23 bugfix
 // @version        2023/11/02 111+
 // @version        2019/05/08 57+
 // @version        2007/08/05 initial release
@@ -67,8 +68,17 @@
   {
     const uri = gBrowser.currentURI;
     const uriPath = uri.filePath;
+    const uriRef = uri.ref; // no use
+    const uriQuery = uri.query;
     const pathArray = uriPath.split("/").filter( (e) => e != "" );
-    const uriArray = pathArray.map( (e, idx) => uri.prePath + "/" + pathArray.slice(0, idx).join("/") );
+    const paramArray = uriQuery.split("&");
+    let uriArray = pathArray.map( (e, idx) => uri.prePath + "/" + pathArray.slice(0, idx).join("/") );
+    if ( paramArray.length > 0 ){
+      uriArray.push(uri.prePath + uri.filePath);
+      for(let idx=1; idx < paramArray.length; idx++){
+        uriArray.push(uri.prePath + uri.filePath + "?" + paramArray.slice(0, idx).join("&"));
+      }
+    }
     return uriArray.reverse();
   };
 })();

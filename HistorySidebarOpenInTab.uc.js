@@ -1,94 +1,87 @@
 // ==UserScript==
 // @name           HistorySidebarOpenInTab.uc.js
-// @namespace      http://fronoske.net/
+// @namespace      http://github.com/fronoske/
 // @description    Open new Tab from History Sidebar
 // @include        main
 // @include        chrome://browser/content/history/history-panel.xhtml
 // @include        chrome://browser/content/history/history-panel.xul
 // @include        chrome://browser/content/places/historySidebar.xhtml
 // @include        chrome://browser/content/places/historySidebar.xul
-// @compatibility  Firefox 73+
+// @compatibility  Firefox 144+
 // @author         fronoske
 // @note           履歴サイドバーから新しいタブで開く
 // @version        2019/05/29 initial release
 // @version        2020/06/16 73+
+// @version        2025/12/16 144+
 // ==/UserScript==
-
-
-// 独自イベントクラス
-class MouseEventWithCtrl extends MouseEvent {
-  // オリジナルのイベントオブジェクトを受けて独自のイベントを生成する
-  constructor(ev) {
-    const mouseEventInit = {
-      screenX: ev.screenX,
-      screenY: ev.screenY,
-      clientX: ev.clientX,
-      clientY: ev.clientY,
-      button : ev.button ,
-      buttons: ev.buttons,
-      region : ev.region ,
-      relatedTarget: ev.target,
-      detail: ev.detail,
-      view: ev.view,
-      sourceCapabilities: ev.sourceCapabilities,
-      bubbles: ev.bubbles,
-      cancelable: ev.cancelable,
-      composed: ev.composed,
-      ctrlKey: true, // for opening new tab
-    };
-    super(ev.type, mouseEventInit)
-  }
-}
 
 /*****************************
  * 履歴サイドバー
  *****************************/
 const historySidebarOpenInTab = {
+    get _BTree() {
+        return document.getElementById("historyTree");
+    },
 
-  get _BTree() {
-    return document.getElementById("historyTree");
-  },
+    init: function () {
+        if (!this._BTree) return;
 
-  init: function() {
-    if (!this._BTree) return;
+        console.log(`historySidebarOpenInTab.init() ${location.href}`);
+        // addEventListener を使用してクリックイベントをキャプチャフェーズで捕捉
+        this._BTree.addEventListener("click", this.onClick, true);
+    },
 
-    console.log(`historySidebarOpenInTab.init() ${location.href}`);
-    this.origOnclick = this._BTree.onclick; // オリジナルのイベントハンドラ
-    this._BTree.onclick = this.onClick;
-  },
+    // サイドバーをunloadしたときに呼び出される用
+    uninit: function () {
+        console.log(`historySidebarOpenInTab.uninit() ${location.href}`);
+        this._BTree.removeEventListener("click", this.onClick, true);
+    },
 
-  // サイドバーをunloadしたときに呼び出される用だが、必要ないので使ってない
-  uninit: function() {
-    console.log(`historySidebarOpenInTab.uninit() ${location.href}`);
-    this._BTree.onclick = historySidebarOpenInTab.origOnclick;
-  },
+    // 新しい onclick イベントハンドラ
+    onClick: function (ev) {
+        // 左クリックのみ処理
+        if (ev.button !== 0) return;
 
-  // 新しい onclick イベントハンドラ
-  onClick: function(origEv) {
-    // オリジナルのイベントに似たイベント（ctrlKey=true）を生成
-    // MouseEventオブジェクトだと target などが readonly なので新たに用意したMouseEventのサブクラスを使う
-    const fakeEventWithCtrl = new MouseEventWithCtrl(origEv);
-    Object.defineProperty(fakeEventWithCtrl, 'target', {writable: false, value: origEv.target});
-    Object.defineProperty(fakeEventWithCtrl, 'originalTarget', {writable: false, value: origEv.originalTarget});
-    // オリジナルの onclick を発動
-    historySidebarOpenInTab.origOnclick(fakeEventWithCtrl); // 実体は PlacesUIUtils.onSidebarTreeClick(ev);
-  },
+        const tree = historySidebarOpenInTab._BTree;
+
+        // クリック位置から行を取得
+        const row = tree.getRowAt(ev.clientX, ev.clientY);
+        if (row < 0) return; // 有効な行がない場合
+
+        // 選択されたノードを取得
+        const node = tree.view.nodeForTreeIndex(row);
+
+        // コンテナ（フォルダ）ではなくURIを持つ項目の場合のみ処理
+        if (node && node.uri && !PlacesUtils.nodeIsContainer(node)) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            // 親ウィンドウのgBrowserを使って新しいタブで開く
+            const mainWindow = window.top;
+            const newTab = mainWindow.gBrowser.addTab(node.uri, {
+                triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}),
+            });
+            // 新しいタブをフォアグラウンドで表示
+            mainWindow.gBrowser.selectedTab = newTab;
+        }
+    },
 };
 
 /*****************************
  * メニューバー「履歴」
  *****************************/
 const historyMenuOpenInTab = {
-  init: function() {
-    const func_source = `
+    init: function () {
+        const func_source = `
       if(event.target.localName == "menuitem" && event.target.attributes.scheme){
-        gBrowser.loadOneTab(event.target._placesNode.uri,
-          {relatedToCurrent: true,inBackground: false, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})}
-      )
+        const newTab = gBrowser.addTab(event.target._placesNode.uri,
+          {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({})}
+        );
+        gBrowser.selectedTab = newTab;
       }`;
-    const historyMenu = document.getElementById("goPopup");
-    if (historyMenu) historyMenu.setAttribute("oncommand", func_source);
-  }
+        const historyMenu = document.getElementById("goPopup");
+        if (historyMenu) historyMenu.setAttribute("oncommand", func_source);
+    },
 };
 
 historySidebarOpenInTab.init();

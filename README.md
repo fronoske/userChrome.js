@@ -1,7 +1,7 @@
 # userChrome.js
 
 自作のUserChrome.js用スクリプトを置いています。
-Firefox 119.0 で動作確認済み。
+Firefox 147.0 で動作確認済み。
 
 ### スクリプト一覧
 
